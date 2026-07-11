@@ -123,6 +123,7 @@ class GitHubSourceConfig(BaseModel):
     owner: Optional[str] = None
     repo: Optional[str] = None
     enabled: bool = True
+    category: Optional[str] = None
 
 
 class HackerNewsConfig(BaseModel):
@@ -131,6 +132,7 @@ class HackerNewsConfig(BaseModel):
     enabled: bool = True
     fetch_top_stories: int = 30
     min_score: int = 100
+    category: Optional[str] = None
 
 
 class RSSSourceConfig(BaseModel):
@@ -153,6 +155,7 @@ class RedditSubredditConfig(BaseModel):
     )
     fetch_limit: int = 25
     min_score: int = 10
+    category: Optional[str] = None
 
 
 class RedditUserConfig(BaseModel):
@@ -162,6 +165,7 @@ class RedditUserConfig(BaseModel):
     enabled: bool = True
     sort: str = "new"
     fetch_limit: int = 10
+    category: Optional[str] = None
 
 
 class RedditConfig(BaseModel):
@@ -179,6 +183,7 @@ class TelegramChannelConfig(BaseModel):
     channel: str  # channel username, e.g. "zaihuapd"
     enabled: bool = True
     fetch_limit: int = 20
+    category: Optional[str] = None
 
 
 class TelegramConfig(BaseModel):
@@ -200,6 +205,7 @@ class TwitterConfig(BaseModel):
     mode: str = "apify"  # "apify" or "playwright"
     users: List[str] = Field(default_factory=list)
     fetch_limit: int = 10
+    category: Optional[str] = None
     fetch_reply_text: bool = False
     max_replies_per_tweet: int = 3
     max_tweets_to_expand: int = 10
@@ -264,6 +270,7 @@ class OSSInsightConfig(BaseModel):
     keywords: List[str] = Field(default_factory=list)
     min_stars: int = 5
     max_items: int = 30
+    category: Optional[str] = None
 
 
 class GDELTConfig(BaseModel):

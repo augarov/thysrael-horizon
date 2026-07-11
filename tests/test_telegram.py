@@ -37,7 +37,7 @@ def test_parse_message_ignores_reply_preview_text() -> None:
 
     item = _scraper()._parse_message(
         msg,
-        "zaihuapd",
+        TelegramChannelConfig(channel="zaihuapd"),
         datetime(2026, 7, 6, 0, 0, tzinfo=timezone.utc),
     )
 
