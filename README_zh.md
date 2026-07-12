@@ -353,6 +353,7 @@ Horizon 支持通过多种方式发布和分发生成的日报：
 | [配置指南](docs/configuration.md) | AI 模型、信息源、过滤、邮件、Webhook、GitHub Pages 和 MCP 配置 |
 | [评分机制](docs/scoring.md) | Horizon 如何评估和排序新闻 |
 | [抓取器](docs/scrapers.md) | 信息源抓取器说明和扩展细节 |
+| [内容提取器](docs/extractors.md) | RSS 信息源的全文提取 |
 | [MCP 工具](src/mcp/README.md) | MCP 客户端可调用的工具说明 |
 
 ## 项目状态

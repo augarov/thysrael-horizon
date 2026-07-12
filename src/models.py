@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional, List, Dict, Any, Union
+from typing import Annotated, Literal, Optional, List, Dict, Any, Union
 from pydantic import BaseModel, HttpUrl, Field, field_validator
 
 
@@ -135,6 +135,22 @@ class HackerNewsConfig(BaseModel):
     category: Optional[str] = None
 
 
+class ExtractorType(str, Enum):
+    TRAFILATURA = "trafilatura"
+
+
+class TrafilaturaExtractorConfig(BaseModel):
+    type: Literal[ExtractorType.TRAFILATURA] = ExtractorType.TRAFILATURA
+    favor_precision: bool = False
+    favor_recall: bool = False
+
+
+ExtractorConfig = Annotated[
+    Union[TrafilaturaExtractorConfig],
+    Field(discriminator="type"),
+]
+
+
 class RSSSourceConfig(BaseModel):
     """RSS feed source configuration."""
 
@@ -142,6 +158,7 @@ class RSSSourceConfig(BaseModel):
     url: HttpUrl
     enabled: bool = True
     category: Optional[str] = None
+    content_extractor: Optional[str] = None
 
 
 class RedditSubredditConfig(BaseModel):
@@ -435,5 +452,6 @@ class Config(BaseModel):
     ai: AIConfig
     sources: SourcesConfig
     filtering: FilteringConfig
+    extractors: Dict[str, ExtractorConfig] = Field(default_factory=dict)
     email: Optional[EmailConfig] = None
     webhook: Optional[WebhookConfig] = None

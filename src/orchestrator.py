@@ -270,7 +270,12 @@ class HorizonOrchestrator:
 
             # RSS feeds
             if self.config.sources.rss:
-                rss_scraper = RSSScraper(self.config.sources.rss, client)
+                from .extractors import ExtractorRegistry
+                rss_scraper = RSSScraper(
+                    self.config.sources.rss,
+                    client,
+                    ExtractorRegistry(self.config.extractors),
+                )
                 tasks.append(self._fetch_with_progress("RSS Feeds", rss_scraper, since))
 
             # Reddit

@@ -35,6 +35,9 @@ twitter = [
     "playwright>=1.40.0",
     "playwright-stealth>=1.0.0",
 ]
+trafilatura = [
+    "trafilatura>=2.1.0",
+]
 
 [project.scripts]
 horizon = "src.main:main"
