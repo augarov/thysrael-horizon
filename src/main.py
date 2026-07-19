@@ -37,17 +37,20 @@ def main():
 
     parser = argparse.ArgumentParser(description="Horizon - AI-Driven Information Aggregation System")
     parser.add_argument("--hours", type=int, help="Force fetch from last N hours")
+    parser.add_argument("-d", "--data-dir", default="data", metavar="PATH",
+                        help="Path to the data directory (default: 'data')")
+    parser.add_argument("-c", "--config", default=None, metavar="PATH",
+                        help="Path to config file (default: <data-dir>/config.json)")
     args = parser.parse_args()
 
     try:
         # Load environment variables from .env file
         load_dotenv()
 
-        # Ensure we're in the project directory or use data/ in current dir
-        data_dir = Path("data")
+        data_dir = Path(args.data_dir)
 
         # Initialize storage manager
-        storage = StorageManager(data_dir=str(data_dir))
+        storage = StorageManager(data_dir=str(data_dir), config_path=args.config)
 
         # Load configuration
         try:
