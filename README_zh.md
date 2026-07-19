@@ -227,6 +227,9 @@ docker compose run --rm horizon
 
 # 或自定义时间窗口
 docker compose run --rm horizon --hours 48
+
+# 构建时启用可选扩展（逗号分隔）
+docker build --build-arg EXTRAS=trafilatura .
 ```
 
 ### 2. 配置

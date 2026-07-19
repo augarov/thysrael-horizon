@@ -13,8 +13,10 @@ COPY src ./src
 COPY data ./data
 COPY .env.example .env.example
 
-# Install dependencies
-RUN uv sync --frozen --no-dev
+# Install dependencies (EXTRAS: comma-separated optional groups, e.g. "trafilatura,twitter")
+ARG EXTRAS=""
+RUN uv sync --frozen --no-dev \
+    $([ -n "$EXTRAS" ] && echo "$EXTRAS" | tr ',' '\n' | sed 's/^/--extra /' | tr '\n' ' ')
 
 # Runtime data is mounted here; keep the image and process unprivileged.
 RUN useradd --create-home --uid 10001 horizon \

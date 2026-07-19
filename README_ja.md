@@ -219,6 +219,9 @@ docker compose run --rm horizon
 
 # またはカスタムの時間枠で実行
 docker compose run --rm horizon --hours 48
+
+# オプションの依存関係グループを含めてビルド（カンマ区切り）
+docker build --build-arg EXTRAS=trafilatura .
 ```
 
 ### 2. 設定
