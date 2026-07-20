@@ -16,7 +16,7 @@ from ..models import ContentItem, SourceType
 from ..storage.manager import ConfigError, StorageManager
 from .webhook import WebhookNotifier
 
-console = Console()
+console = Console(stderr=True)
 
 
 def _make_test_items() -> list[ContentItem]:
@@ -208,9 +208,7 @@ def main() -> None:
         sys.exit(0)
     except Exception as e:
         console.print(f"\n[bold red]Error: {e}[/bold red]")
-        import traceback
-
-        traceback.print_exc()
+        console.print_exception()
         sys.exit(1)
 
 

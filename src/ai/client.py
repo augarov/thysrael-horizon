@@ -10,9 +10,12 @@ from google import genai
 from google.genai import types
 
 
+import logging
+
 from ..models import AIConfig, AIProvider, AI_PROVIDER_DEFAULTS
-from rich import print as rich_print
 from .tokens import record_usage
+
+logger = logging.getLogger(__name__)
 
 
 _ENV_VAR_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -610,9 +613,9 @@ class ChainedAIClient(AIClient):
                     raise
                 last_error = exc
                 if i < len(self.configs) - 1:
-                    rich_print(
-                        f"\n[yellow]Provider {self.configs[i].provider.value} failed ({exc}), "
-                        f"falling back to {self.configs[i + 1].provider.value}...[/yellow]"
+                    logger.warning(
+                        "Provider %s failed (%s), falling back to %s...",
+                        self.configs[i].provider.value, exc, self.configs[i + 1].provider.value,
                     )
         raise RuntimeError(f"All providers failed. Last error: {last_error}")
 

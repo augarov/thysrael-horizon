@@ -7,13 +7,17 @@ For items that pass the score threshold, this module:
 
 import asyncio
 import json
+import logging
 import re
 import sys
 import os
 from typing import List, Optional
-from tenacity import retry, stop_after_attempt, wait_exponential
+from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, MofNCompleteColumn
+from tenacity import retry, stop_after_attempt, wait_exponential
 from ddgs import DDGS
+
+logger = logging.getLogger(__name__)
 
 from .client import AIClient
 from .prompts import (
@@ -27,8 +31,9 @@ from ..models import ContentItem
 class ContentEnricher:
     """Enriches high-scoring content items with background knowledge."""
 
-    def __init__(self, ai_client: AIClient):
+    def __init__(self, ai_client: AIClient, console: Optional[Console] = None):
         self.client = ai_client
+        self.console = console or Console(stderr=True)
 
     def _get_concurrency(self) -> int:
         """Return the configured enrichment concurrency, clamped to 1 or above."""
@@ -50,7 +55,7 @@ class ContentEnricher:
                 try:
                     await self._enrich_item(item)
                 except Exception as e:
-                    print(f"Error enriching item {item.id}: {e}, falling back to translation")
+                    logger.error("Error enriching item %s: %s, falling back to translation", item.id, e)
                     await self._translate_item(item)
             progress.advance(progress_task)
 
@@ -60,6 +65,7 @@ class ContentEnricher:
             BarColumn(),
             MofNCompleteColumn(),
             transient=True,
+            console=self.console,
         ) as progress:
             task = progress.add_task("Enriching", total=len(items))
             coros = [
@@ -195,7 +201,7 @@ class ContentEnricher:
         if result is None:
             # Gracefully degrade: fall back to a lightweight translation
             # instead of dropping the item untranslated.
-            print(f"Warning: could not parse enrichment response for {item.id}, falling back to translation")
+            logger.warning("Could not parse enrichment response for %s, falling back to translation", item.id)
             await self._translate_item(item)
             return
 

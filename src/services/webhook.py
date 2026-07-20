@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+from rich.console import Console
 from dataclasses import asdict, dataclass
 from enum import Enum
 from urllib.parse import urlsplit, urlunsplit
@@ -250,20 +251,7 @@ class WebhookNotifier:
 
     def __init__(self, config: WebhookConfig, console=None):
         self.config = config
-        if console is None:
-            try:
-                from rich.console import Console
-
-                self.console = Console()
-            except ImportError:
-
-                class DummyConsole:
-                    def print(self, *args, **kwargs):
-                        print(*args, **kwargs)
-
-                self.console = DummyConsole()
-        else:
-            self.console = console
+        self.console = console if console is not None else Console(stderr=True)
         self.url = None
         self._validate_config()  # sets self.url or raises ValueError
 

@@ -2,11 +2,15 @@
 
 import asyncio
 import json
+import logging
 import re
 from typing import List, Optional
 from pydantic import BaseModel, Field, ValidationError
-from tenacity import retry, stop_after_attempt, wait_exponential
+from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, MofNCompleteColumn
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+logger = logging.getLogger(__name__)
 
 from .client import AIClient
 from .prompts import CONTENT_ANALYSIS_SYSTEM, CONTENT_ANALYSIS_USER
@@ -28,8 +32,9 @@ class AnalysisResult(BaseModel):
 class ContentAnalyzer:
     """Analyzes content items using AI to determine importance."""
 
-    def __init__(self, ai_client: AIClient):
+    def __init__(self, ai_client: AIClient, console: Optional[Console] = None):
         self.client = ai_client
+        self.console = console or Console(stderr=True)
 
     @staticmethod
     def _parse_json_response(response: str) -> Optional[dict]:
@@ -61,7 +66,7 @@ class ContentAnalyzer:
                 try:
                     await self._analyze_item(item)
                 except Exception as e:
-                    print(f"Error analyzing item {item.id}: {e}")
+                    logger.error("Error analyzing item %s: %s", item.id, e)
                     item.ai_score = 0.0
                     item.ai_reason = "Analysis failed"
                     item.ai_summary = item.title
@@ -76,6 +81,7 @@ class ContentAnalyzer:
             BarColumn(),
             MofNCompleteColumn(),
             transient=True,
+            console=self.console,
         ) as progress:
             task = progress.add_task("Analyzing", total=len(items))
             coros = [
@@ -162,7 +168,7 @@ class ContentAnalyzer:
         except ValidationError:
             result = None
         if result is None:
-            print(f"Warning: could not parse analysis response for {item.id}, using defaults")
+            logger.warning("Could not parse analysis response for %s, using defaults", item.id)
             item.ai_score = 0.0
             item.ai_reason = "Analysis response parse failed"
             item.ai_summary = item.title

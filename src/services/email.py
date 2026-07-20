@@ -16,6 +16,8 @@ try:
 except ImportError:
     markdown = None
 
+from rich.console import Console
+
 from ..ai.markdown_utils import clean_app_summary_markdown
 from ..models import EmailConfig
 
@@ -28,20 +30,7 @@ class EmailManager:
     def __init__(self, config: EmailConfig, console=None):
         self.config = config
         self.pwd = os.getenv(self.config.password_env)
-        if console is None:
-            try:
-                from rich.console import Console
-
-                self.console = Console()
-            except ImportError:
-
-                class DummyConsole:
-                    def print(self, *args, **kwargs):
-                        print(*args, **kwargs)
-
-                self.console = DummyConsole()
-        else:
-            self.console = console
+        self.console = console if console is not None else Console(stderr=True)
 
         if not self.pwd and self.config.enabled:
             logger.warning(
